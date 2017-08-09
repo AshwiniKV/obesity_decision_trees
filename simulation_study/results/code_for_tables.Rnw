@@ -1,0 +1,643 @@
+\documentclass{article}
+
+\title{Comparing CART and CTREE: A simulation study}
+
+\begin{document}
+\SweaveOpts{concordance=TRUE}
+
+\maketitle
+
+<<echo = FALSE, eps = FALSE>>=
+#setwd("./simulation_study/results")
+load("simRESULTS250.RData")
+result1<-result
+#library(tables)
+#ibrary(xtable)
+term.treel<-unlist(result1[1,])
+term.ptreel<-unlist(result1[2,])
+term.ptreel2<-unlist(result1[3,])
+term.ctreel<-unlist(result1[4,])
+MNTl<-unlist(result1[5,])
+MNPl<-unlist(result1[6,])
+MNPl2<-unlist(result1[7,])
+MNCl<-unlist(result1[8,])
+MNLl<-unlist(result1[9,])
+
+# Regression tree
+
+lowtree<-round(mean(term.treel),2)
+lowptree<-round(mean(term.ptreel),2)
+lowp2tree<-round(mean(term.ptreel2),2)
+lowctree<-round(mean(term.ctreel),2)
+
+tftreel<-quantile(term.treel, p = 0.2)
+egtreel<-quantile(term.treel, p= 0.8)
+tfptreel<-quantile(term.ptreel, p = 0.2)
+egptreel<-quantile(term.ptreel, p = 0.8)
+tfptreel2<-quantile(term.ptreel2, p = 0.2)
+egptreel2<-quantile(term.ptreel2, p = 0.8)
+tfctreel<-quantile(term.ctreel, p = 0.2)
+egctreel<-quantile(term.ctreel, p = 0.8)
+
+MSE.treel<-round(mean(MNTl),2)
+MSE.ptreel<-round(mean(MNPl),2)
+MSE.ptreel2<-round(mean(MNPl2),2)
+MSE.ctreel<-round(mean(MNCl),2)
+MSE.lml<-round(mean(MNLl),2)
+
+SMSE.treel<-round(sqrt(var(MNTl)),3)
+SMSE.ptreel<-round(sqrt(var(MNPl)),3)
+SMSE.ptreel2<-round(sqrt(var(MNPl2)),3)
+SMSE.ctreel<-round(sqrt(var(MNCl)),3)
+SMSE.lml<-round(sqrt(var(MNLl)), 3)
+@
+
+<<echo = FALSE, results = tex>>=
+library(tables)
+library(xtable)
+c6<-cbind("Mean", "SD", "Mean", "20th", "80th")
+c1<-cbind(mean(MSE.treel), mean(SMSE.treel), round(mean(term.treel), 0), mean(tftreel), mean(egtreel))
+c2<-cbind(mean(MSE.ptreel), mean(SMSE.ptreel), round(mean(term.ptreel), 0), mean(tfptreel), mean(egptreel))
+c3<-cbind(mean(MSE.ptreel2), mean(SMSE.ptreel2), round(mean(term.ptreel2), 0), mean(tfptreel2), mean(egptreel2))
+c4<-cbind(mean(MSE.ctreel), mean(SMSE.ctreel), round(mean(term.ctreel),0), mean(tfctreel), mean(egctreel))
+c5<-cbind(mean(MSE.lml), mean(SMSE.lml), "", "", "")
+my.data<-data.frame(rbind(c6, c1, c2, c3, c4, c5))
+row.names(my.data)<-c("","CART", "Pruned CART", "Pruned CART (1-SE)", "CTREE", "Linear Regression")
+colnames(my.data) <- c("MSE", "", "Terminal Node", "", "")
+print(xtable(my.data, type = "html", caption = "Regression model"))
+@
+
+<<echo = FALSE, eps = FALSE>>=
+load("simRESULTS250s01.RData")
+result7<-result
+term.tree<-unlist(result7[1,])
+term.ptree<-unlist(result7[2,])
+term.ptree2<-unlist(result7[3,])
+term.ctree<-unlist(result7[4,])
+MNTl<-unlist(result7[5,])
+MNPl<-unlist(result7[6,])
+MNPl2<-unlist(result7[7,])
+MNCl<-unlist(result7[8,])
+MNLl<-unlist(result7[9,])
+
+mma<-round(mean(MNTl),2)
+mmb<-round(mean(MNPl),2)
+mmc<-round(mean(MNPl2),2)
+mmd<-round(mean(MNCl),2)
+mme<-round(mean(MNLl), 2)
+smma<-round(sqrt(var(MNTl)),3)
+smmb<-round(sqrt(var(MNPl)),3)
+smmc<-round(sqrt(var(MNPl2)),3)
+smmd<-round(sqrt(var(MNCl)),3)
+smme<-round(sqrt(var(MNLl)),3)
+nt<-round(mean(term.tree),0)
+nc<-round(mean(term.ctree),0)
+np<-round(mean(term.ptree),0)
+np2<-round(mean(term.ptree2),0)
+tnt<-quantile(term.tree, 0.2)
+tnc<-quantile(term.ctree, 0.2)
+tnp<-quantile(term.ptree, 0.2)
+tnp2<-quantile(term.ptree2, 0.2)
+ent<-quantile(term.tree, 0.8)
+enc<-quantile(term.ctree, 0.8)
+enp<-quantile(term.ptree, 0.8)
+enp2<-quantile(term.ptree2, 0.8)
+@
+
+<<echo= FALSE, results = tex>>=
+c6<-cbind("Mean", "SD", "Mean", "20th", "80th")
+c1<-cbind(mean(mma), mean(smma), nt, mean(tnt), mean(ent))
+c2<-cbind(mean(mmb), mean(smmb), np, mean(tnp), mean(enp))
+c3<-cbind(mean(mmc), mean(smmc), np2, mean(tnp2), mean(enp2))
+c4<-cbind(mean(mmd), mean(smmd), nc, mean(tnc), mean(enc))
+c5<-cbind(mean(mme), mean(smme), "", "", "")
+my.data<-data.frame(rbind(c6, c1, c2, c3, c4, c5))
+row.names(my.data)<-c("","CART", "Pruned CART", "Pruned CART (1-SE)", "CTREE", "Linear Regression")
+colnames(my.data) <- c("MSE", "", "Terminal Node", "", "")
+xtable(my.data, caption = " Tree model")
+@
+
+<<echo = FALSE>>=
+load("hybRESULTS250.RData")
+result1<-result
+#library(tables)
+#library(xtable)
+term.treel<-unlist(result1[1,])
+term.ptreel<-unlist(result1[2,])
+term.ptreel2<-unlist(result1[3,])
+term.ctreel<-unlist(result1[4,])
+
+MNTl<-unlist(result1[5,])
+MNPl<-unlist(result1[6,])
+MNPl2<-unlist(result1[7,])
+MNCl<-unlist(result1[8,])
+
+MNLl<-unlist(result1[9,])
+
+lowtree<-round(mean(term.treel),0)
+lowptree<-round(mean(term.ptreel),0)
+lowp2tree<-round(mean(term.ptreel2),0)
+lowctree<-round(mean(term.ctreel),0)
+
+tftreel<-quantile(term.treel, p = 0.2)
+egtreel<-quantile(term.treel, p= 0.8)
+tfptreel<-quantile(term.ptreel, p = 0.2)
+egptreel<-quantile(term.ptreel, p = 0.8)
+tfptreel2<-quantile(term.ptreel2, p = 0.2)
+egptreel2<-quantile(term.ptreel2, p = 0.8)
+tfctreel<-quantile(term.ctreel, p = 0.2)
+egctreel<-quantile(term.ctreel, p = 0.8)
+
+MSE.treel<-round(mean(MNTl),2)
+MSE.ptreel<-round(mean(MNPl),2)
+MSE.ptreel2<-round(mean(MNPl2),2)
+MSE.ctreel<-round(mean(MNCl),2)
+MSE.lml<-round(mean(MNLl),2)
+
+SMSE.treel<-round(sqrt(var(MNTl)),3)
+SMSE.ptreel<-round(sqrt(var(MNPl)),3)
+SMSE.ptreel2<-round(sqrt(var(MNPl2)),3)
+SMSE.ctreel<-round(sqrt(var(MNCl)),3)
+SMSE.lml<-round(sqrt(var(MNLl)),3)
+@
+
+<<echo= FALSE, results = tex>>=
+c6<-cbind("Mean", "SD", "Mean", "20th", "80th")
+c1<-cbind(mean(MSE.treel), mean(SMSE.treel), lowtree, mean(tftreel), mean(egtreel))
+c2<-cbind(mean(MSE.ptreel), mean(SMSE.ptreel), lowptree, mean(tfptreel), mean(egptreel))
+c3<-cbind(mean(MSE.ptreel), mean(SMSE.ptreel2), lowp2tree, mean(tfptreel2), mean(egptreel2))
+c4<-cbind(mean(MSE.ctreel), mean(SMSE.ctreel), lowctree, mean(tfctreel), mean(egctreel))
+c5<-cbind(mean(MSE.lml), mean(SMSE.lml), "", "", "")
+my.data<-data.frame(rbind(c6, c1, c2, c3, c4, c5))
+row.names(my.data)<-c("","CART", "Pruned CART", "Pruned CART (1-SE)", "CTREE", "Linear Regression")
+colnames(my.data) <- c("MSE", "", "Terminal Node", "", "")
+xtable(my.data, caption = "Hybrid model")
+@
+
+
+<<echo = FALSE, eps = FALSE>>=
+load("simRESULTtype1error.RData")
+result1<-result
+#library(tables)
+#library(xtable)
+term.treel<-unlist(result1[1,])
+term.ptreel<-unlist(result1[2,])
+term.ptreel2<-unlist(result1[3,])
+term.ctreel<-unlist(result1[4,])
+
+MNTl<-unlist(result1[5,])
+MNPl<-unlist(result1[6,])
+MNPl2<-unlist(result1[7,])
+MNCl<-unlist(result1[8,])
+MNLl<-unlist(result1[9,])
+
+lowtree<-round(mean(term.treel),0)
+lowptree<-round(mean(term.ptreel),0)
+lowp2tree<-round(mean(term.ptreel2),0)
+lowctree<-round(mean(term.ctreel),0)
+
+tftreel<-quantile(term.treel, p = 0.2)
+egtreel<-quantile(term.treel, p= 0.8)
+tfptreel<-quantile(term.ptreel, p = 0.2)
+egptreel<-quantile(term.ptreel, p = 0.8)
+tfptreel2<-quantile(term.ptreel2, p = 0.2)
+egptreel2<-quantile(term.ptreel2, p = 0.8)
+tfctreel<-quantile(term.ctreel, p = 0.2)
+egctreel<-quantile(term.ctreel, p = 0.8)
+
+MSE.treel<-round(mean(MNTl),2)
+MSE.ptreel<-round(mean(MNPl),2)
+MSE.ptreel2<-round(mean(MNPl2),2)
+MSE.ctreel<-round(mean(MNCl),2)
+MSE.lml<-round(mean(MNLl),2)
+
+SMSE.treel<-round(sqrt(var(MNTl)),3)
+SMSE.ptreel<-round(sqrt(var(MNPl)),3)
+SMSE.ptreel2<-round(sqrt(var(MNPl2)),3)
+SMSE.ctreel<-round(sqrt(var(MNCl)),3)
+SMSE.lml<-round(sqrt(var(MNLl)),3)
+
+unpr.err<-round(mean(term.treel>1),5)
+pruned.err<-round(mean(term.ptreel>1),5)
+se1.err<-round(mean(term.ptreel2>1),5)
+ctree.err<-round(mean(term.ctreel>1),5)
+@
+
+<<r test5, echo= FALSE, results = tex>>=
+c1<-cbind(MSE.treel, SMSE.treel, unpr.err)
+c2<-cbind(MSE.ptreel, SMSE.ptreel, pruned.err)
+c3<-cbind(MSE.ptreel2, SMSE.ptreel2, se1.err)
+c4<-cbind(MSE.ctreel, SMSE.ctreel, ctree.err)
+c5<-cbind(MSE.lml, SMSE.lml, "")
+my.data<-data.frame(rbind( c1, c2, c3, c4, c5))
+row.names(my.data)<-c("CART", "Pruned CART", "Pruned CART (1-SE)", "CTREE", "Linear Regression")
+colnames(my.data)<-c("Mean (MSE)", "Mean (SD)", "Type I Error (Mean)")
+xtable(my.data, caption = "Type I error model")
+@
+
+<< include = FALSE, eps = FALSE, echo = FALSE>>=
+load("simRESULTS330s01.RData")
+result1<-result
+library(tables)
+library(xtable)
+term.treel<-unlist(result1[1,])
+term.ptreel<-unlist(result1[2,])
+term.ptreel2<-unlist(result1[3,])
+term.ctreel<-unlist(result1[4,])
+term.treeh<-unlist(result1[5,])
+term.ptreeh<-unlist(result1[6,])
+term.ptreeh2<-unlist(result1[7,])
+term.ctreeh<-unlist(result1[8,])
+MNTl<-unlist(result1[9,])
+MNPl<-unlist(result1[10,])
+MNPl2<-unlist(result1[11,])
+MNCl<-unlist(result1[12,])
+MNTh<-unlist(result1[13,])
+MNPh<-unlist(result1[14,])
+MNPh2<-unlist(result1[15,])
+MNCh<-unlist(result1[16,])
+MNLl<-unlist(result1[17,])
+MNLh<-unlist(result1[18,])
+
+# Regression tree
+
+lowtree30<-round(mean(term.treel),2)
+hightree30<-round(mean(term.treeh),2)
+lowptree30<-round(mean(term.ptreel),2)
+highptree30<-round(mean(term.ptreeh),2)
+lowp2tree30<-round(mean(term.ptreel2),2)
+highp2tree30<-round(mean(term.ptreeh2),2)
+lowctree30<-round(mean(term.ctreel),2)
+highctree30<-round(mean(term.ctreeh),2)
+
+MSE.treel30<-round(mean(MNTl),4)
+MSE.treeh30<-round(mean(MNTh),4)
+MSE.ptreel30<-round(mean(MNPl),4)
+MSE.ptreeh30<-round(mean(MNPh),4)
+MSE.ptreel230<-round(mean(MNPl2),4)
+MSE.ptreeh230<-round(mean(MNPh2),4)
+MSE.ctreel30<-round(mean(MNCl),4)
+MSE.ctreeh30<-round(mean(MNCh),4)
+MSE.lml30<-round(mean(MNLl),4)
+MSE.lmh30<-round(mean(MNLh),4)
+
+load("simRESULTS3250s01.RData")
+result1<-result
+library(tables)
+library(xtable)
+term.treel<-unlist(result1[1,])
+term.ptreel<-unlist(result1[2,])
+term.ptreel2<-unlist(result1[3,])
+term.ctreel<-unlist(result1[4,])
+term.treeh<-unlist(result1[5,])
+term.ptreeh<-unlist(result1[6,])
+term.ptreeh2<-unlist(result1[7,])
+term.ctreeh<-unlist(result1[8,])
+MNTl<-unlist(result1[9,])
+MNPl<-unlist(result1[10,])
+MNPl2<-unlist(result1[11,])
+MNCl<-unlist(result1[12,])
+MNTh<-unlist(result1[13,])
+MNPh<-unlist(result1[14,])
+MNPh2<-unlist(result1[15,])
+MNCh<-unlist(result1[16,])
+MNLl<-unlist(result1[17,])
+MNLh<-unlist(result1[18,])
+
+# Regression tree
+
+lowtree250<-round(mean(term.treel),2)
+hightree250<-round(mean(term.treeh),2)
+lowptree250<-round(mean(term.ptreel),2)
+highptree250<-round(mean(term.ptreeh),2)
+lowp2tree250<-round(mean(term.ptreel2),2)
+highp2tree250<-round(mean(term.ptreeh2),2)
+lowctree250<-round(mean(term.ctreel),2)
+highctree250<-round(mean(term.ctreeh),2)
+
+MSE.treel250<-round(mean(MNTl),4)
+MSE.treeh250<-round(mean(MNTh),4)
+MSE.ptreel250<-round(mean(MNPl),4)
+MSE.ptreeh250<-round(mean(MNPh),4)
+MSE.ptreel2250<-round(mean(MNPl2),4)
+MSE.ptreeh2250<-round(mean(MNPh2),4)
+MSE.ctreel250<-round(mean(MNCl),4)
+MSE.ctreeh250<-round(mean(MNCh),4)
+MSE.lml250<-round(mean(MNLl),4)
+MSE.lmh250<-round(mean(MNLh),4)
+
+load("simRESULTS3500s01.RData")
+result1<-result
+library(tables)
+library(xtable)
+term.treel<-unlist(result1[1,])
+term.ptreel<-unlist(result1[2,])
+term.ptreel2<-unlist(result1[3,])
+term.ctreel<-unlist(result1[4,])
+term.treeh<-unlist(result1[5,])
+term.ptreeh<-unlist(result1[6,])
+term.ptreeh2<-unlist(result1[7,])
+term.ctreeh<-unlist(result1[8,])
+MNTl<-unlist(result1[9,])
+MNPl<-unlist(result1[10,])
+MNPl2<-unlist(result1[11,])
+MNCl<-unlist(result1[12,])
+MNTh<-unlist(result1[13,])
+MNPh<-unlist(result1[14,])
+MNPh2<-unlist(result1[15,])
+MNCh<-unlist(result1[16,])
+MNLl<-unlist(result1[17,])
+MNLh<-unlist(result1[18,])
+
+# Regression tree
+
+lowtree500<-round(mean(term.treel),2)
+hightree500<-round(mean(term.treeh),2)
+lowptree500<-round(mean(term.ptreel),2)
+highptree500<-round(mean(term.ptreeh),2)
+lowp2tree500<-round(mean(term.ptreel2),2)
+highp2tree500<-round(mean(term.ptreeh2),2)
+lowctree500<-round(mean(term.ctreel),2)
+highctree500<-round(mean(term.ctreeh),2)
+
+MSE.treel500<-round(mean(MNTl),4)
+MSE.treeh500<-round(mean(MNTh),4)
+MSE.ptreel500<-round(mean(MNPl),4)
+MSE.ptreeh500<-round(mean(MNPh),4)
+MSE.ptreel2500<-round(mean(MNPl2),4)
+MSE.ptreeh2500<-round(mean(MNPh2),4)
+MSE.ctreel500<-round(mean(MNCl),4)
+MSE.ctreeh500<-round(mean(MNCh),4)
+MSE.lml500<-round(mean(MNLl),4)
+MSE.lmh500<-round(mean(MNLh),4)
+
+load("simRESULTS3750s01.RData")
+
+result1<-result
+library(tables)
+library(xtable)
+term.treel<-unlist(result1[1,])
+term.ptreel<-unlist(result1[2,])
+term.ptreel2<-unlist(result1[3,])
+term.ctreel<-unlist(result1[4,])
+term.treeh<-unlist(result1[5,])
+term.ptreeh<-unlist(result1[6,])
+term.ptreeh2<-unlist(result1[7,])
+term.ctreeh<-unlist(result1[8,])
+MNTl<-unlist(result1[9,])
+MNPl<-unlist(result1[10,])
+MNPl2<-unlist(result1[11,])
+MNCl<-unlist(result1[12,])
+MNTh<-unlist(result1[13,])
+MNPh<-unlist(result1[14,])
+MNPh2<-unlist(result1[15,])
+MNCh<-unlist(result1[16,])
+MNLl<-unlist(result1[17,])
+MNLh<-unlist(result1[18,])
+
+# Regression tree
+
+lowtree750<-round(mean(term.treel),2)
+hightree750<-round(mean(term.treeh),2)
+lowptree750<-round(mean(term.ptreel),2)
+highptree750<-round(mean(term.ptreeh),2)
+lowp2tree750<-round(mean(term.ptreel2),2)
+highp2tree750<-round(mean(term.ptreeh2),2)
+lowctree750<-round(mean(term.ctreel),2)
+highctree750<-round(mean(term.ctreeh),2)
+
+MSE.treel750<-round(mean(MNTl),4)
+MSE.treeh750<-round(mean(MNTh),4)
+MSE.ptreel750<-round(mean(MNPl),4)
+MSE.ptreeh750<-round(mean(MNPh),4)
+MSE.ptreel2750<-round(mean(MNPl2),4)
+MSE.ptreeh2750<-round(mean(MNPh2),4)
+MSE.ctreel750<-round(mean(MNCl),4)
+MSE.ctreeh750<-round(mean(MNCh),4)
+MSE.lml750<-round(mean(MNLl),4)
+MSE.lmh750<-round(mean(MNLh),4)
+
+load("simRESULTS1000s01.RData")
+
+result1<-result
+library(tables)
+library(xtable)
+term.treel<-unlist(result1[1,])
+term.ptreel<-unlist(result1[2,])
+term.ptreel2<-unlist(result1[3,])
+term.ctreel<-unlist(result1[4,])
+term.treeh<-unlist(result1[5,])
+term.ptreeh<-unlist(result1[6,])
+term.ptreeh2<-unlist(result1[7,])
+term.ctreeh<-unlist(result1[8,])
+MNTl<-unlist(result1[9,])
+MNPl<-unlist(result1[10,])
+MNPl2<-unlist(result1[11,])
+MNCl<-unlist(result1[12,])
+MNTh<-unlist(result1[13,])
+MNPh<-unlist(result1[14,])
+MNPh2<-unlist(result1[15,])
+MNCh<-unlist(result1[16,])
+MNLl<-unlist(result1[17,])
+MNLh<-unlist(result1[18,])
+
+# Regression tree
+
+lowtree1000<-round(mean(term.treel),2)
+hightree1000<-round(mean(term.treeh),2)
+lowptree1000<-round(mean(term.ptreel),2)
+highptree1000<-round(mean(term.ptreeh),2)
+lowp2tree1000<-round(mean(term.ptreel2),2)
+highp2tree1000<-round(mean(term.ptreeh2),2)
+lowctree1000<-round(mean(term.ctreel),2)
+highctree1000<-round(mean(term.ctreeh),2)
+
+MSE.treel1000<-round(mean(MNTl),4)
+MSE.treeh1000<-round(mean(MNTh),4)
+MSE.ptreel1000<-round(mean(MNPl),4)
+MSE.ptreeh1000<-round(mean(MNPh),4)
+MSE.ptreel21000<-round(mean(MNPl2),4)
+MSE.ptreeh21000<-round(mean(MNPh2),4)
+MSE.ctreel1000<-round(mean(MNCl),4)
+MSE.ctreeh1000<-round(mean(MNCh),4)
+MSE.lml1000<-round(mean(MNLl),4)
+MSE.lmh1000<-round(mean(MNLh),4)
+
+load("simRESULTS33000s01.RData")
+
+result1<-result
+library(tables)
+library(xtable)
+term.treel<-unlist(result1[1,])
+term.ptreel<-unlist(result1[2,])
+term.ptreel2<-unlist(result1[3,])
+term.ctreel<-unlist(result1[4,])
+term.treeh<-unlist(result1[5,])
+term.ptreeh<-unlist(result1[6,])
+term.ptreeh2<-unlist(result1[7,])
+term.ctreeh<-unlist(result1[8,])
+MNTl<-unlist(result1[9,])
+MNPl<-unlist(result1[10,])
+MNPl2<-unlist(result1[11,])
+MNCl<-unlist(result1[12,])
+MNTh<-unlist(result1[13,])
+MNPh<-unlist(result1[14,])
+MNPh2<-unlist(result1[15,])
+MNCh<-unlist(result1[16,])
+MNLl<-unlist(result1[17,])
+MNLh<-unlist(result1[18,])
+
+# Regression tree
+
+lowtree3000<-round(mean(term.treel),2)
+hightree3000<-round(mean(term.treeh),2)
+lowptree3000<-round(mean(term.ptreel),2)
+highptree3000<-round(mean(term.ptreeh),2)
+lowp2tree3000<-round(mean(term.ptreel2),2)
+highp2tree3000<-round(mean(term.ptreeh2),2)
+lowctree3000<-round(mean(term.ctreel),2)
+highctree3000<-round(mean(term.ctreeh),2)
+
+MSE.treel3000<-round(mean(MNTl),4)
+MSE.treeh3000<-round(mean(MNTh),4)
+MSE.ptreel3000<-round(mean(MNPl),4)
+MSE.ptreeh3000<-round(mean(MNPh),4)
+MSE.ptreel23000<-round(mean(MNPl2),4)
+MSE.ptreeh23000<-round(mean(MNPh2),4)
+MSE.ctreel3000<-round(mean(MNCl),4)
+MSE.ctreeh3000<-round(mean(MNCh),4)
+MSE.lml3000<-round(mean(MNLl),4)
+MSE.lmh3000<-round(mean(MNLh),4)
+
+load("simRESULTS35000s01.RData")
+
+result1<-result
+library(tables)
+library(xtable)
+term.treel<-unlist(result1[1,])
+term.ptreel<-unlist(result1[2,])
+term.ptreel2<-unlist(result1[3,])
+term.ctreel<-unlist(result1[4,])
+term.treeh<-unlist(result1[5,])
+term.ptreeh<-unlist(result1[6,])
+term.ptreeh2<-unlist(result1[7,])
+term.ctreeh<-unlist(result1[8,])
+MNTl<-unlist(result1[9,])
+MNPl<-unlist(result1[10,])
+MNPl2<-unlist(result1[11,])
+MNCl<-unlist(result1[12,])
+MNTh<-unlist(result1[13,])
+MNPh<-unlist(result1[14,])
+MNPh2<-unlist(result1[15,])
+MNCh<-unlist(result1[16,])
+MNLl<-unlist(result1[17,])
+MNLh<-unlist(result1[18,])
+
+# Regression tree
+
+lowtree5000<-round(mean(term.treel),2)
+hightree5000<-round(mean(term.treeh),2)
+lowptree5000<-round(mean(term.ptreel),2)
+highptree5000<-round(mean(term.ptreeh),2)
+lowp2tree5000<-round(mean(term.ptreel2),2)
+highp2tree5000<-round(mean(term.ptreeh2),2)
+lowctree5000<-round(mean(term.ctreel),2)
+highctree5000<-round(mean(term.ctreeh),2)
+
+MSE.treel5000<-round(mean(MNTl),4)
+MSE.treeh5000<-round(mean(MNTh),4)
+MSE.ptreel5000<-round(mean(MNPl),4)
+MSE.ptreeh5000<-round(mean(MNPh),4)
+MSE.ptreel25000<-round(mean(MNPl2),4)
+MSE.ptreeh25000<-round(mean(MNPh2),4)
+MSE.ctreel5000<-round(mean(MNCl),4)
+MSE.ctreeh5000<-round(mean(MNCh),4)
+MSE.lml5000<-round(mean(MNLl),4)
+MSE.lmh5000<-round(mean(MNLh),4)
+@
+
+\section*{Figure 5}
+<<fig = TRUE, echo = FALSE, width=20, height = 10>>=
+n<-c(30, 250,500, 1000,3000, 5000)
+MSE.reg<-c(MSE.treel30, MSE.treel250, MSE.treel500, MSE.treel1000, MSE.treel3000, MSE.treel5000)
+MSE.preg<-c(MSE.ptreel30, MSE.ptreel250, MSE.ptreel500, MSE.ptreel1000, MSE.ptreel3000, MSE.ptreel5000)
+MSE.preg2<-c(MSE.ptreel230, MSE.ptreel2250, MSE.ptreel2500,  MSE.ptreel21000, MSE.ptreel23000, MSE.ptreel25000)
+MSE.ctree<-c(MSE.ctreel30, MSE.ctreel250, MSE.ctreel500, MSE.ctreel1000, MSE.ctreel3000, MSE.ctreel5000)
+n<-c(30, 250,500, 1000,3000, 5000)
+lowreg<-c(lowtree30, lowtree250, lowtree500, lowtree1000, lowtree3000, lowtree5000)
+lowpreg<-c(lowptree30, lowptree250, lowptree500, lowptree1000, lowptree3000, lowptree5000)
+lowpreg2<-c(lowp2tree30, lowp2tree250, lowp2tree500, lowp2tree1000, lowp2tree3000, lowp2tree5000)
+lowctree<-c(lowctree30, lowctree250, lowctree500, lowctree1000, lowctree3000, lowctree5000)
+
+log.n<-log(n)
+n<-c(30, 250,500, 1000,3000, 5000)
+p1<-data.frame(cbind(MSE.ctree, n))
+p2<-data.frame(cbind(MSE.reg, n))
+p3<-data.frame(cbind(MSE.preg, n))
+p4<-data.frame(cbind(MSE.preg2, n))
+
+logn<-sort(rep(rep(n, 6),4))
+MSE<-c(MSE.reg, MSE.preg, MSE.preg2, MSE.ctree)
+id.nos<-c(rep(7,6), rep(3, 6), rep(8, 6), rep(4, 6))
+n<-rep(n,4)
+dataset1<-data.frame(cbind(MSE, id.nos, n))
+
+plot1<-ggplot(data = dataset1, aes(x = n, y = MSE)) +geom_point(size = 2)+
+  geom_line(data = p2, aes(x= n, y = MSE.reg, linetype = "CART" ), size = 0.8)+
+  geom_line(data = p3, aes(x= n, y = MSE.preg, linetype = "Pruned CART"), size = 0.9)+
+  geom_line(data = p4, aes(x= n, y = MSE.preg2, linetype = "Pruned CART (1-SE)"), size = 1.1)+xlab("Sample Size")+ylab("MSE")+ theme_bw()+
+  geom_line(data = p1, aes(x= n, y = MSE.ctree,  linetype = "CTREE"), size = 0.8)+
+  scale_x_continuous(breaks= c(30, 250, 500, 1000, 3000, 5000), trans = "log",labels= c("30", "250", "500",  "1000", "3000", "5000"))+ scale_linetype_manual(breaks=c("CART", "Pruned CART","Pruned CART (1-SE)", "CTREE"), values=c("dotdash", "solid","dotted", "twodash"))+ theme(legend.direction = "horizontal", legend.position = "bottom", legend.key = element_blank(), 
+      legend.background = element_rect(fill = "white", colour = "gray30"), legend.text=element_text(size=23))+ labs(linetype = " ")+theme(axis.text.x = element_text(size=25), axis.text.y = element_text(size = 25))+ theme(axis.title = element_text(size = 25))+guides(linetype=guide_legend(keywidth = 4, keyheight = 1))
+        
+#############################################################################################
+
+log.n<-log(n)
+p1<-data.frame(cbind(lowctree, n))
+p2<-data.frame(cbind(lowreg, n))
+p3<-data.frame(cbind(lowpreg, n))
+p4<-data.frame(cbind(lowpreg2, n))
+
+logn<-sort(rep(rep(n, 6),4))
+term<-c(lowreg, lowpreg, lowpreg2, lowctree)
+id.nos<-c(rep(7,6), rep(3, 6), rep(8, 6), rep(4, 6))
+
+dataset1<-data.frame(cbind(term, id.nos, n))
+
+plot2<-ggplot(data = dataset1, aes(x = n, y = term)) +geom_point(size = 2)+
+  geom_line(data = p2, aes(x= n, y = lowreg, linetype = "CART" ), size = 0.8)+
+  geom_line(data = p3, aes(x= n, y = lowpreg, linetype = "Pruned CART"), size = 0.9)+
+  geom_line(data = p4, aes(x= n, y = lowpreg2, linetype = "Pruned CART (1-SE)"), size = 1.1)+xlab("Sample Size")+ylab("Number of Terminal nodes")+
+  geom_line(data = p1, aes(x= n, y = lowctree,  linetype = "CTREE"), size = 0.8)+theme_bw()+
+  scale_x_continuous(breaks= c(30, 250, 500, 1000, 3000, 5000), trans = "log",labels= c("30", "250", "500", "1000", "3000", "5000"))+ scale_linetype_manual(breaks=c("CART", "Pruned CART","Pruned CART (1-SE)", "CTREE"), values=c("dotdash", "solid","dotted", "twodash"))+ theme(legend.direction = "horizontal", legend.position = "bottom", legend.key = element_blank(),legend.background = element_rect(fill = "white", colour = "gray30"), legend.text=element_text(size=23))+ labs(linetype = " ")+theme(axis.text.x = element_text(size=25), axis.text.y = element_text(size = 25))+ theme(axis.title = element_text(size = 25))+guides(linetype=guide_legend(keywidth = 4, keyheight = 1))
+library(ggplot2)
+library(gridExtra)
+library(grid)
+grid_arrange_shared_legend <- function(..., nrow = 1, ncol = length(list(...)), position = c("bottom", "right")) {
+
+  plots <- list(...)
+  position <- match.arg(position)
+  g <- ggplotGrob(plots[[1]] + theme(legend.position = position))$grobs
+  legend <- g[[which(sapply(g, function(x) x$name) == "guide-box")]]
+  lheight <- sum(legend$height)
+  lwidth <- sum(legend$width)
+  gl <- lapply(plots, function(x) x + theme(legend.position = "none"))
+  gl <- c(gl, nrow = nrow, ncol = ncol)
+
+  combined <- switch(position,
+                     "bottom" = arrangeGrob(do.call(arrangeGrob, gl),
+                                            legend,
+                                            ncol = 1,
+                                            heights = unit.c(unit(1, "npc") - lheight, lheight)),
+                     "right" = arrangeGrob(do.call(arrangeGrob, gl),
+                                           legend,
+                                           ncol = 2,
+                                           widths = unit.c(unit(1, "npc") - lwidth, lwidth)))
+  #grid.newpage()
+  grid.draw(combined)
+
+}
+grid_arrange_shared_legend(plot1, plot2, nrow = 1, ncol = 2)
+@
+
+\end{document}
