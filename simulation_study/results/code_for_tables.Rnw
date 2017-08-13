@@ -1,6 +1,6 @@
 \documentclass{article}
 
-\title{Comparing CART and CTREE: A simulation study}
+\title{Comparing CART and CTree: A simulation study}
 
 \begin{document}
 \SweaveOpts{concordance=TRUE}
@@ -15,7 +15,8 @@ result1<-result
 #ibrary(xtable)
 term.treel<-unlist(result1[1,])
 term.ptreel<-unlist(result1[2,])
-term.ptreel2<-unlist(result1[3,])
+term.ptreel2<-unlist
+(result1[3,])
 term.ctreel<-unlist(result1[4,])
 MNTl<-unlist(result1[5,])
 MNPl<-unlist(result1[6,])
@@ -62,7 +63,7 @@ c3<-cbind(mean(MSE.ptreel2), mean(SMSE.ptreel2), round(mean(term.ptreel2), 0), m
 c4<-cbind(mean(MSE.ctreel), mean(SMSE.ctreel), round(mean(term.ctreel),0), mean(tfctreel), mean(egctreel))
 c5<-cbind(mean(MSE.lml), mean(SMSE.lml), "", "", "")
 my.data<-data.frame(rbind(c6, c1, c2, c3, c4, c5))
-row.names(my.data)<-c("","CART", "Pruned CART", "Pruned CART (1-SE)", "CTREE", "Linear Regression")
+row.names(my.data)<-c("","CART", "Pruned CART", "Pruned CART (1-SE)", "CTree", "Linear Regression")
 colnames(my.data) <- c("MSE", "", "Terminal Node", "", "")
 print(xtable(my.data, type = "html", caption = "Regression model"))
 @
@@ -112,7 +113,7 @@ c3<-cbind(mean(mmc), mean(smmc), np2, mean(tnp2), mean(enp2))
 c4<-cbind(mean(mmd), mean(smmd), nc, mean(tnc), mean(enc))
 c5<-cbind(mean(mme), mean(smme), "", "", "")
 my.data<-data.frame(rbind(c6, c1, c2, c3, c4, c5))
-row.names(my.data)<-c("","CART", "Pruned CART", "Pruned CART (1-SE)", "CTREE", "Linear Regression")
+row.names(my.data)<-c("","CART", "Pruned CART", "Pruned CART (1-SE)", "CTree", "Linear Regression")
 colnames(my.data) <- c("MSE", "", "Terminal Node", "", "")
 xtable(my.data, caption = " Tree model")
 @
@@ -169,7 +170,7 @@ c3<-cbind(mean(MSE.ptreel), mean(SMSE.ptreel2), lowp2tree, mean(tfptreel2), mean
 c4<-cbind(mean(MSE.ctreel), mean(SMSE.ctreel), lowctree, mean(tfctreel), mean(egctreel))
 c5<-cbind(mean(MSE.lml), mean(SMSE.lml), "", "", "")
 my.data<-data.frame(rbind(c6, c1, c2, c3, c4, c5))
-row.names(my.data)<-c("","CART", "Pruned CART", "Pruned CART (1-SE)", "CTREE", "Linear Regression")
+row.names(my.data)<-c("","CART", "Pruned CART", "Pruned CART (1-SE)", "CTree", "Linear Regression")
 colnames(my.data) <- c("MSE", "", "Terminal Node", "", "")
 xtable(my.data, caption = "Hybrid model")
 @
@@ -230,7 +231,7 @@ c3<-cbind(MSE.ptreel2, SMSE.ptreel2, se1.err)
 c4<-cbind(MSE.ctreel, SMSE.ctreel, ctree.err)
 c5<-cbind(MSE.lml, SMSE.lml, "")
 my.data<-data.frame(rbind( c1, c2, c3, c4, c5))
-row.names(my.data)<-c("CART", "Pruned CART", "Pruned CART (1-SE)", "CTREE", "Linear Regression")
+row.names(my.data)<-c("CART", "Pruned CART", "Pruned CART (1-SE)", "CTree", "Linear Regression")
 colnames(my.data)<-c("Mean (MSE)", "Mean (SD)", "Type I Error (Mean)")
 xtable(my.data, caption = "Type I error model")
 @
@@ -586,8 +587,8 @@ plot1<-ggplot(data = dataset1, aes(x = n, y = MSE)) +geom_point(size = 2)+
   geom_line(data = p2, aes(x= n, y = MSE.reg, linetype = "CART" ), size = 0.8)+
   geom_line(data = p3, aes(x= n, y = MSE.preg, linetype = "Pruned CART"), size = 0.9)+
   geom_line(data = p4, aes(x= n, y = MSE.preg2, linetype = "Pruned CART (1-SE)"), size = 1.1)+xlab("Sample Size")+ylab("MSE")+ theme_bw()+
-  geom_line(data = p1, aes(x= n, y = MSE.ctree,  linetype = "CTREE"), size = 0.8)+
-  scale_x_continuous(breaks= c(30, 250, 500, 1000, 3000, 5000), trans = "log",labels= c("30", "250", "500",  "1000", "3000", "5000"))+ scale_linetype_manual(breaks=c("CART", "Pruned CART","Pruned CART (1-SE)", "CTREE"), values=c("dotdash", "solid","dotted", "twodash"))+ theme(legend.direction = "horizontal", legend.position = "bottom", legend.key = element_blank(), 
+  geom_line(data = p1, aes(x= n, y = MSE.ctree,  linetype = "CTree"), size = 0.8)+
+  scale_x_continuous(breaks= c(30, 250, 500, 1000, 3000, 5000), trans = "log",labels= c("30", "250", "500",  "1000", "3000", "5000"))+ scale_linetype_manual(breaks=c("CART", "Pruned CART","Pruned CART (1-SE)", "CTree"), values=c("dotdash", "solid","dotted", "twodash"))+ theme(legend.direction = "horizontal", legend.position = "bottom", legend.key = element_blank(), 
       legend.background = element_rect(fill = "white", colour = "gray30"), legend.text=element_text(size=23))+ labs(linetype = " ")+theme(axis.text.x = element_text(size=25), axis.text.y = element_text(size = 25))+ theme(axis.title = element_text(size = 25))+guides(linetype=guide_legend(keywidth = 4, keyheight = 1))
         
 #############################################################################################
@@ -608,8 +609,8 @@ plot2<-ggplot(data = dataset1, aes(x = n, y = term)) +geom_point(size = 2)+
   geom_line(data = p2, aes(x= n, y = lowreg, linetype = "CART" ), size = 0.8)+
   geom_line(data = p3, aes(x= n, y = lowpreg, linetype = "Pruned CART"), size = 0.9)+
   geom_line(data = p4, aes(x= n, y = lowpreg2, linetype = "Pruned CART (1-SE)"), size = 1.1)+xlab("Sample Size")+ylab("Number of Terminal nodes")+
-  geom_line(data = p1, aes(x= n, y = lowctree,  linetype = "CTREE"), size = 0.8)+theme_bw()+
-  scale_x_continuous(breaks= c(30, 250, 500, 1000, 3000, 5000), trans = "log",labels= c("30", "250", "500", "1000", "3000", "5000"))+ scale_linetype_manual(breaks=c("CART", "Pruned CART","Pruned CART (1-SE)", "CTREE"), values=c("dotdash", "solid","dotted", "twodash"))+ theme(legend.direction = "horizontal", legend.position = "bottom", legend.key = element_blank(),legend.background = element_rect(fill = "white", colour = "gray30"), legend.text=element_text(size=23))+ labs(linetype = " ")+theme(axis.text.x = element_text(size=25), axis.text.y = element_text(size = 25))+ theme(axis.title = element_text(size = 25))+guides(linetype=guide_legend(keywidth = 4, keyheight = 1))
+  geom_line(data = p1, aes(x= n, y = lowctree,  linetype = "CTree"), size = 0.8)+theme_bw()+
+  scale_x_continuous(breaks= c(30, 250, 500, 1000, 3000, 5000), trans = "log",labels= c("30", "250", "500", "1000", "3000", "5000"))+ scale_linetype_manual(breaks=c("CART", "Pruned CART","Pruned CART (1-SE)", "CTree"), values=c("dotdash", "solid","dotted", "twodash"))+ theme(legend.direction = "horizontal", legend.position = "bottom", legend.key = element_blank(),legend.background = element_rect(fill = "white", colour = "gray30"), legend.text=element_text(size=23))+ labs(linetype = " ")+theme(axis.text.x = element_text(size=25), axis.text.y = element_text(size = 25))+ theme(axis.title = element_text(size = 25))+guides(linetype=guide_legend(keywidth = 4, keyheight = 1))
 library(ggplot2)
 library(gridExtra)
 library(grid)
